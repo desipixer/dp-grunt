@@ -1,0 +1,53 @@
+.main-title {
+	min-height : 40px;
+	color : red;
+}
+
+.tab-title {
+	color : #003399;
+	font-size : 33px;
+}
+
+.thumb-img {
+	width : 320px;
+	height : 480px;
+}
+
+.form-span input[type="text"][class*="span"] { float: left; }
+
+.div-menu {
+	padding : 10px;
+}
+
+.image-post {
+	max-width : 320px;
+	max-height: 480px;
+}
+
+.imageContainer {
+   position : relative;
+}
+
+.imgCount {
+      position: absolute; 
+      width: 20px; 
+      height : 20px;
+      right: 0; 
+      top: 0; 
+      bottom: 0; 
+      left:0;
+      background: black; 
+      color:white
+}
+
+.imgDownload {
+      position: absolute; 
+      width: 20px; 
+      height : 20px;
+      right: 0; 
+      bottom: 5; 
+      left:0;
+      background: black; 
+      color:white
+}
+

@@ -1,0 +1,40 @@
+<div>
+	<div>
+		<div class="row">
+			<div class="col-md-1">
+				<button class="btn btn-success" ng-click="publishPost()">POST</button>
+			</div>
+			<div class="col-md-5">
+				<h4>{{postObj.title}}</h4>
+			</div>
+			<div class="col-md-2 btn-group">
+				<button class="btn btn-primary" ng-click="goToUrl()">URL</button>
+				<button class="btn btn-danger" ng-click="shareToGplus()">Google+</button>
+			</div>
+			<div class="col-md-3 btn-group">
+				<button class="btn btn-primary" data-clipboard-text="{{postObj.link}}">Copy-URL</button>
+				<button class="btn btn-info" data-clipboard-text="{{postObj.title}}">Copy-Title</button>
+				<button class="btn btn-danger" data-clipboard-text="{{postContent}}">Copy-Content</button>
+			</div>
+			<div class="col-md-1">
+				<div id="divPostStatus" style="color:red"></div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<span ng-repeat="image in postObj.images">
+			<span class="imageContainer">
+				<a ng-href="{{image}}" target="_blank" >
+					<img ng-src="{{image.replace('s1600','s480')}}" title="{{postObj.title}}" alt="{{postObj.title}}" class="image-post" />
+				</a>
+				<span class='imgDownload'>
+					<a href='{{image}}' download>
+						<button class='btn btn-primary' >
+							<span class='glyphicon glyphicon-download-alt' style='cursor:pointer' aria-hidden='true'></span>
+						</button>
+					</a>
+				</span>
+			</span>
+		</span>
+	</div>
+</div>

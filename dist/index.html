@@ -1,0 +1,37 @@
+<html ng-app="dpApp">
+	<head>
+		<title>DP Web</title>
+		<meta name=viewport content="width=device-width, initial-scale=1">
+			<!-- Global script definitions -->
+			<script src="https://apis.google.com/js/api.js"></script>
+			<script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+			<script src="scripts/vendor.js"></script>
+
+		</head>
+		<body>
+			<div ng-controller="dpMainCtrl">
+			<div class="main-title" >
+				<a ui-sref="home"><h2>DP</h2></a>
+			</div>
+				<div class="row">
+					<div class="col-sm-1" style="display:none">
+						<ul class="nav nav-tabs nav-stacked nav-pills" role="tablist">
+							<li>
+								
+							</li>
+						</ul>
+					</div>
+					<div class="col-sm-12">
+						<div class="tab-content">
+							<div ui-view></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script src="scripts/scripts.min.js"></script>
+			<!-- Global style definitions -->
+			<link rel="stylesheet" href="lib/css/bootstrap.min.css" />
+			<link rel="stylesheet" href="lib/css/font-awesome.min.css" />
+			<link rel="stylesheet" href="css/styles.css" />
+		</body>
+	</html>

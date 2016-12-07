@@ -1,0 +1,42 @@
+<div>
+	<div></div>
+	<div>
+		
+			<div class="row div-menu" style="padding-top:70px">
+				<div class="col-md-4">
+					<select ng-model="selSite" ng-options="site.blogId as site.blogURL for site in sites" ng-init="selSite = sites[0]" ng-change="selSiteChange()" class="form-control"></select>
+				</div>
+				<div class="col-xs-3">
+					<input ng-model="txtSearchSite" placeholder="Search Site Name ..." class="form-control" ng-enter="searchSite()" />
+				</div>
+				<div class="col-xs-1">
+					<button ng-click="searchSite()" class="btn btn-primary" >Search</button>
+				</div>
+				<div class="col-xs-3">
+					<input ng-model="txtSearch" placeholder="&#xF002;" style="font-family:Arial, FontAwesome" class="form-control" ng-enter="searchKeyWords()"  />
+				</div>
+			</div>
+			<div class="row div-menu">
+				<div class="col-md-2 btn-group">
+					<button class="btn" ng-click="getPreviousPosts()" > Previous </button>
+					<button class="btn" ng-click="getNextPosts()"> Next </button> 	
+				</div>
+				<div class="col-md-2 btn-group" >
+					<button class="btn btn-primary" ng-click="titleSort()"> SORT </button>
+					<button class="btn btn-primary" ng-click="shuffleArray()"> SHUFFLE </button>
+				</div>
+				<div class="col-md-3">
+					<input ng-model="filterEntry" placeholder="Filter.." class="form-control" />
+				</div>
+				
+				
+			</div>
+	</div>
+	<div class="">
+		<span ng-repeat="entry in entries | filter : filterEntry" ng-hide="entry.images.length < 2">
+			<a ng-href="#images/{{entry.id}}">
+				<img ng-src="{{entry.thumb}}" alt="entry.title" class="thumb-img" />
+			</a>
+		</span>
+	</div>
+</div>
