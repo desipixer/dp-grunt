@@ -33,6 +33,9 @@
 			</div>
 	</div>
 	<div class="">
+		<div>
+			<span class="bg-primary"> TOTAL ITEMS : {{totalEntries}} </span>
+		</div>
 		<span ng-repeat="entry in entries | filter : filterEntry" ng-hide="entry.images.length < 2">
 			<a ng-href="#images/{{entry.id}}">
 				<img ng-src="{{entry.thumb}}" alt="entry.title" class="thumb-img" />
