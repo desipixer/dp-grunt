@@ -439,7 +439,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 
 	$scope.selSiteChange = function(){
 		utilServ.getEntries($scope.selSite, null, null).success(function(obj){
-			$scope.totalEntries = obj.feed.entries.length;
+			$scope.totalEntries = obj.feed.entry.length;
 			var processedObj = utilServ.processBlogObj(obj);
 			$scope.entries = processedObj;	
 		}).error(function(err){
