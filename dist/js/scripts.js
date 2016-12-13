@@ -551,4 +551,14 @@ app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.
 		win.focus();
 	}
 
+	$scope.downloadAllImages = function(){
+		$scope.postObj.images.forEach(function(value,index){
+            var link = document.createElement('a');
+            link.href = value;
+            link.download = 'Download.jpg';
+            document.body.appendChild(link);
+            link.click();
+		})
+	}
+
 }]);		
