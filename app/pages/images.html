@@ -4,7 +4,7 @@
 			<div class="col-md-1">
 				<button class="btn btn-success" ng-click="publishPost()">POST</button>
 			</div>
-			<div class="col-md-5">
+			<div class="col-md-4">
 				<h4>{{postObj.title}}</h4>
 			</div>
 			<div class="col-md-2 btn-group">
@@ -19,6 +19,10 @@
 			<div class="col-md-1">
 				<div id="divPostStatus" style="color:red"></div>
 				<button class='btn btn-success' ng-click="downloadAllImages()" ><span class='fa fa-download' style='cursor:pointer' aria-hidden='true'></span> All</button>
+			</div>
+			<div class="col-md-1">
+				<button class='btn btn-success' ng-click="publishToWordpress()" > WP Post</button>
+				<span id='wp-status' ></span>
 			</div>
 		</div>
 	</div>

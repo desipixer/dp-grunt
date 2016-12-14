@@ -10,7 +10,7 @@ app.service('settings', function(){
 		]
 	}
 	return {
-		maxResults : 100,
+		maxResults : 400,
 		startIndex : 1,
 		blogName : "http://www.dp.in",
 		blogId : "7833828309523986982",

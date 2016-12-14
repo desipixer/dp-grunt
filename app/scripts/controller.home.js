@@ -1,4 +1,4 @@
-app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings','$http', function($scope,siteServ, utilServ, settings, $http){
+app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post', function($scope,siteServ, utilServ, settings, $http, $interval, postService){
 	$scope.title = "Home Page";
 	$scope.sites = siteServ.sites;
 
@@ -18,6 +18,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 			$scope.totalEntries = obj.feed.entry.length;
 			var processedObj = utilServ.processBlogObj(obj);
 			$scope.entries = processedObj;	
+			console.log($scope.entries);
 		}).error(function(err){
 			console.log(err);
 		});
@@ -86,21 +87,73 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 
 	$scope.getWPAuth = function(){
 		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io/dp-grunt/dist&response_type=token";
-		window.location = authUrl;
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+
+		$http({
+			method: 'POST',
+			url : postUrl, 
+			data : {
+				title : "Hi-Title-New"
+			},
+			headers : {
+				"Authorization" : "Bearer mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP"
+			}
+		}).success(function(data){
+			console.log(data);
+		}).error(function(err){
+			console.log(err);
+		})
+		//window.location = authUrl;
 	}
 
-	var params = window.location.hash.substr(1),
-			    token = params.substr( params.indexOf( 'access_token' ) )
-			            .split( '&' )[0]
-			            .split( '=' )[1],
-			    siteID = params.substr( params.indexOf( 'site_id' ) )
-			            .split( '&' )[0]
-			            .split( '=' )[1];
 
-			if ( token && siteID ) {
-				console.log(token);
-				//alert(token);
+	$scope.postAllToWordpress = function(){
+		// get all images and post to wordpress
+		var entryArray = $scope.entries;
+		var i= 0;	
+		var x = 0;
+
+		setInterval(function() {
+
+		    if (x < settings.maxResults) {
+		        postEntry($scope.entries[i++], i);
+		    }
+
+		    else return;
+
+		    x++;
+		}, 200);
+
+
+	}
+
+
+	function postEntry(postObj, i){	
+		var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+		var postTitle = postObj.title;
+		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
+		$http({
+			method: 'POST',
+			url : postUrl, 
+			data : {
+				title : postTitle,
+				content : postContent
+			},
+			headers : {
+				"Authorization" : "Bearer "+ bearerToken
 			}
+		}).success(function(data){
+			//$('#wp-status').css('color','green').fadeOut(1000);
+			
+			console.log("Posted Item :"+ i);
+			console.log(data);
+		}).error(function(err){
+			console.log(err);
+		})
+	}
+
+	
 	
 }]);
 

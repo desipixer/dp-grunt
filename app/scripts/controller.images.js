@@ -1,4 +1,4 @@
-app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.post", function($scope,$stateParams, utilService, postService){
+app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.post","$http", function($scope,$stateParams, utilService, postService, $http){
 
 	var id = $stateParams.id !== undefined ? $stateParams.id : 'default';
 	var postObj = _.filter(utilService.sessionBlog, function(obj) {
@@ -47,6 +47,33 @@ app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.
             document.body.appendChild(link);
             link.click();
 		})
+	}
+
+	$scope.publishToWordpress = function(){
+		// Change Bearer Token manually till you figure out the flow
+		var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
+
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+		var postTitle = $scope.postObj.title;
+		var postContent = postService.generatePostHTML($scope.postObj.images, $scope.postObj.title);
+		$http({
+			method: 'POST',
+			url : postUrl, 
+			data : {
+				title : postTitle,
+				content : postContent
+			},
+			headers : {
+				"Authorization" : "Bearer "+ bearerToken
+			}
+		}).success(function(data){
+			//$('#wp-status').css('color','green').fadeOut(3000);
+			console.log(data);
+		}).error(function(err){
+			console.log(err);
+		})
+
+
 	}
 
 }]);		
