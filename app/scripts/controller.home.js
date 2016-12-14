@@ -85,7 +85,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 
 
 	$scope.getWPAuth = function(){
-		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io/dp-grunt/dist/#/home&response_type=token";
+		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io&response_type=token";
 		$http.get(authUrl).success(function(obj){
 			console.log(obj);
 		}).error(function(err){
