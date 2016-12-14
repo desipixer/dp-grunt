@@ -88,7 +88,12 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io&response_type=token";
 		$http({
 		    method: 'JSONP',
-		    url: authUrl
+		    dataType: 'html',
+		    data : '',
+		    url: authUrl,
+		    headers: {
+		            'Content-type': 'application/json'
+		        }
 		}).success(function(obj){
 			console.log(obj);
 		}).error(function(err){
