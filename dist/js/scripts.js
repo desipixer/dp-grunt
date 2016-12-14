@@ -422,7 +422,7 @@ app.controller('dpMainCtrl', ['$scope','service.sites','service.main', function(
 }]);
 
 	
-app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings', function($scope,siteServ, utilServ, settings){
+app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings','$http', function($scope,siteServ, utilServ, settings, $http){
 	$scope.title = "Home Page";
 	$scope.sites = siteServ.sites;
 
@@ -505,6 +505,16 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 
 	$scope.shuffleArray = function(){
 		utilServ.sessionBlog = $scope.entries = _.shuffle($scope.entries);
+	}
+
+
+	$scope.getWPAuth = function(){
+		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io/dp-grunt/dist/#/home&response_type=token";
+		$http.get(authUrl).success(function(obj){
+			console.log(obj);
+		}).error(function(err){
+			console.log(err);
+		});
 	}
 	
 }]);
