@@ -522,7 +522,8 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 			            .split( '=' )[1];
 
 			if ( token && siteID ) {
-				alert(token);
+				console.log(token);
+				//alert(token);
 			}
 	
 }]);
