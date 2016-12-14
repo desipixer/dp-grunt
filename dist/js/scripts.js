@@ -535,18 +535,18 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 	$scope.postAllToWordpress = function(){
 		// get all images and post to wordpress
 		var entryArray = $scope.entries;
-		var i= 0;	
-		var x = 0;
+		var i= $scope.entries.length - 1;	
+		var x = $scope.entries.length;
 
 		setInterval(function() {
 
-		    if (x < settings.maxResults) {
-		        postEntry($scope.entries[i++], i);
+		    if (x > 0) {
+		        postEntry($scope.entries[i--], i);
 		    }
 
 		    else return;
 
-		    x++;
+		    x--;
 		}, 200);
 
 
@@ -558,24 +558,28 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
-		$http({
-			method: 'POST',
-			url : postUrl, 
-			data : {
-				title : postTitle,
-				content : postContent
-			},
-			headers : {
-				"Authorization" : "Bearer "+ bearerToken
-			}
-		}).success(function(data){
-			//$('#wp-status').css('color','green').fadeOut(1000);
-			
-			console.log("Posted Item :"+ i);
-			console.log(data);
-		}).error(function(err){
-			console.log(err);
-		})
+		// Ignore any posts with less than 2 images. Most probably it will be bogus/ spam
+		if(postObj.images.length > 1){
+			$http({
+				method: 'POST',
+				url : postUrl, 
+				data : {
+					title : postTitle,
+					content : postContent
+				},
+				headers : {
+					"Authorization" : "Bearer "+ bearerToken
+				}
+			}).success(function(data){
+				//$('#wp-status').css('color','green').fadeOut(1000);
+				
+				console.log("Posted Item :"+ i);
+				console.log(data);
+			}).error(function(err){
+				console.log(err);
+			})
+		}
+		
 	}
 
 	
