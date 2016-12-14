@@ -1,6 +1,7 @@
 app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post', function($scope,siteServ, utilServ, settings, $http, $interval, postService){
 	$scope.title = "Home Page";
 	$scope.sites = siteServ.sites;
+	$scope.startIndex = settings.startIndex;
 
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
@@ -53,7 +54,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		if(settings.startIndex <= 1){
 			return;
 		}
-		settings.startIndex -= settings.maxResults;
+		$scope.startIndex= settings.startIndex -= settings.maxResults;
 		var blogId = $scope.selSite.blogId !== undefined ? $scope.selSite.blogId : $scope.selSite ;
 		utilServ.getEntries(blogId, settings.startIndex, settings.maxResults).success(function(obj){
 			var processedObj = utilServ.processBlogObj(obj);
@@ -64,7 +65,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 	}
 
 	$scope.getNextPosts = function(){
-		settings.startIndex += settings.maxResults;
+		$scope.startIndex = settings.startIndex += settings.maxResults;
 		var blogId = $scope.selSite.blogId !== undefined ? $scope.selSite.blogId : $scope.selSite ;
 		utilServ.getEntries(blogId, settings.startIndex, settings.maxResults).success(function(obj){
 			var processedObj = utilServ.processBlogObj(obj);
