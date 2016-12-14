@@ -510,20 +510,20 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 
 	$scope.getWPAuth = function(){
 		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io&response_type=token";
-		$http({
-		    method: 'JSONP',
-		    dataType: 'html',
-		    data : '',
-		    url: authUrl,
-		    headers: {
-		            'Content-type': 'application/json'
-		        }
-		}).success(function(obj){
-			console.log(obj);
-		}).error(function(err){
-			console.log(err);
-		});
+		window.location = authUrl;
 	}
+
+	var params = window.location.hash.substr(1),
+			    token = params.substr( params.indexOf( 'access_token' ) )
+			            .split( '&' )[0]
+			            .split( '=' )[1],
+			    siteID = params.substr( params.indexOf( 'site_id' ) )
+			            .split( '&' )[0]
+			            .split( '=' )[1];
+
+			if ( token && siteID ) {
+				alert(token);
+			}
 	
 }]);
 
