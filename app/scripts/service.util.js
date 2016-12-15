@@ -55,6 +55,33 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 		return [];
 	}
 
+	var processBlogEntries = function(entryArr){
+		var resultArr = [];
+		if(entryArr.length == 0){
+			return [];
+		}
+		if(entryArr == undefined){
+			return [];
+		}
+		entryArr.forEach(function(value,index){
+			if(value !== undefined){
+				var obj = {};
+				obj.title = (value.title.$t !== undefined) ? value.title.$t : null;
+				obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+				obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]) : null;
+				obj.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+				obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+				obj.published = value.published.$t;
+				obj.updated = value.published.$t;
+
+				resultArr.push(obj);
+			}
+			
+		});
+		this.sessionBlog = resultArr;
+		return resultArr;
+	}
+
 	var searchSite = function(blogUrl){
 		return http.get(urlService.urlForBlogId(blogUrl));
 	}
@@ -75,6 +102,7 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 		processBlogObj : processBlogObj,
 		searchSite : searchSite,
 		searchText : searchText,
-		sessionBlog : this.sessionBlog
+		sessionBlog : this.sessionBlog,
+		processBlogEntries : processBlogEntries
 	}
 }]);

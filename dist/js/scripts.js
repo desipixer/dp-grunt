@@ -238,6 +238,33 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 		return [];
 	}
 
+	var processBlogEntries = function(entryArr){
+		var resultArr = [];
+		if(entryArr.length == 0){
+			return [];
+		}
+		if(entryArr == undefined){
+			return [];
+		}
+		entryArr.forEach(function(value,index){
+			if(value !== undefined){
+				var obj = {};
+				obj.title = (value.title.$t !== undefined) ? value.title.$t : null;
+				obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+				obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]) : null;
+				obj.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+				obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+				obj.published = value.published.$t;
+				obj.updated = value.published.$t;
+
+				resultArr.push(obj);
+			}
+			
+		});
+		this.sessionBlog = resultArr;
+		return resultArr;
+	}
+
 	var searchSite = function(blogUrl){
 		return http.get(urlService.urlForBlogId(blogUrl));
 	}
@@ -258,7 +285,8 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 		processBlogObj : processBlogObj,
 		searchSite : searchSite,
 		searchText : searchText,
-		sessionBlog : this.sessionBlog
+		sessionBlog : this.sessionBlog,
+		processBlogEntries : processBlogEntries
 	}
 }]);
 app.service('service.sites', function(){
@@ -592,10 +620,12 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 }]);
 
 	
-app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post', function($scope,siteServ, utilServ, settings, $http, $interval, postService){
+app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post','service.url',
+ function($scope,siteServ, utilServ, settings, $http, $interval, postService, urlService){
 	$scope.title = "Wordpress Page";
 	$scope.sites = siteServ.sites;
 	$scope.startIndex = settings.startIndex;
+	$scope.totalItems = 0;
 
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
@@ -623,13 +653,15 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		utilServ.searchSite($scope.txtSearchSite).success(function(obj){
 			//console.log(obj);
 			$scope.selSite = obj.id;
+			$scope.totalItems = obj.posts.totalItems;
+			console.log(obj);
 			$scope.selSiteChange();
 			var blogObj = {
 			    "blogId": obj.id,
 			    "blogURL": $scope.txtSearchSite,
 			    "category": 1
 			};
-			console.log(blogObj.toString());
+			console.log(blogObj);
 
 		}).error(function(err){
 			console.log("Error during searching site : "+ err);
@@ -708,7 +740,6 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	$scope.postAllToWordpress = function(){
 		// get all images and post to wordpress
-		var entryArray = $scope.entries;
 		var i= $scope.entries.length - 1;	
 		var x = $scope.entries.length;
 
@@ -754,6 +785,42 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 			})
 		}
 		
+	}
+
+	$scope.postAll = function(){
+		//get all posts from the blog and post to wordpress using bearer token of wordpress.
+
+		//get total posts of the blog
+		var entries = [];
+		var tempStartIndex = 1;
+		var totalItems = $scope.totalItems;
+		console.log("selSite : "+ $scope.selSite);
+		console.log("totalItems : "+ $scope.totalItems);
+		getPostArray($scope.selSite, 1, totalItems, entries);
+
+	}
+
+	function getPostArray(blogId, startIndex, totalItems, entries){
+		var feedUrl = urlService.urlForBlogFeed(blogId, startIndex, 500);
+		$http.jsonp(feedUrl).success(function(obj){
+			var entryArray = obj.feed.entry;
+			entries = entries.concat(entryArray);
+			if(startIndex < totalItems){
+				// increment startIndex and call this function again
+				startIndex += 500;
+				console.log("startIndex : "+ startIndex);
+				console.log("entries length : "+ entries.length)
+				getPostArray(blogId, startIndex, totalItems, entries);
+			} else {
+				// this function is finished
+				console.log(entries.length);
+				console.log(entries[0]);
+				$scope.entries = utilServ.processBlogEntries(entries);
+				$scope.postAllToWordpress();
+			}
+		}).error(function(err){
+			console.log('err: '+ err)
+		})
 	}
 
 	

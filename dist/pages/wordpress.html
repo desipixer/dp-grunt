@@ -28,9 +28,12 @@
 				<div class="col-md-3">
 					<input ng-model="filterEntry" placeholder="&#xf0b0; Filter" style="font-family:Arial, FontAwesome" class="form-control" />
 				</div>
-				<div>
+				<div class="col-md-1">
 
-				<button class="btn btn-primary" ng-click="postAllToWordpress()"> Post All WP </button>
+					<button class="btn btn-primary" ng-click="postAllToWordpress()"> Post All WP </button>
+				</div>
+				<div class="cold-xs-1">
+					<button class="btn btn-success" ng-click="postAll()"> Post Blog to WP </button>
 				</div>
 				
 			</div>
@@ -38,6 +41,7 @@
 	<div class="">
 		<div>
 			<span class="bg-primary"> START INDEX : {{startIndex}} </span>
+			<span class="bg-info"> TOTAL ITEMS: {{totalItems}} </span>
 		</div>
 		<span ng-repeat="entry in entries | filter : filterEntry" ng-hide="entry.images.length < 2">
 			<div class="padding:5px">
