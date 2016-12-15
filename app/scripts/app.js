@@ -26,4 +26,9 @@ app.config(['$stateProvider','$urlRouterProvider', function(stateProvider, urlPr
 			templateUrl : 'pages/images.html',
 			controller : 'dpImageCtrl'
 		})
+		.state('wordpress', {
+			url : '/wordpress',
+			templateUrl : 'pages/wordpress.html',
+			controller : 'dpWordPressCtrl'
+		})
 }])
