@@ -21,7 +21,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 			$scope.totalEntries = obj.feed.entry.length;
 			var processedObj = utilServ.processBlogObj(obj);
 			$scope.entries = processedObj;	
-			console.log($scope.entries);
+			//console.log($scope.entries);
 		}).error(function(err){
 			console.log(err);
 		});
@@ -32,7 +32,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 			//console.log(obj);
 			$scope.selSite = obj.id;
 			$scope.totalItems = obj.posts.totalItems;
-			console.log(obj);
+			//console.log(obj);
 			$scope.selSiteChange();
 			var blogObj = {
 			    "blogId": obj.id,
@@ -174,11 +174,11 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		var totalItems = $scope.totalItems;
 		console.log("selSite : "+ $scope.selSite);
 		console.log("totalItems : "+ $scope.totalItems);
-		getPostArray($scope.selSite, 1, totalItems, entries);
+		getPostArray($scope.selSite, 1, totalItems, entries, true);
 
 	}
 
-	function getPostArray(blogId, startIndex, totalItems, entries){
+	function getPostArray(blogId, startIndex, totalItems, entries, isPostAll){
 		var feedUrl = urlService.urlForBlogFeed(blogId, startIndex, 500);
 		$http.jsonp(feedUrl).success(function(obj){
 			var entryArray = obj.feed.entry;
@@ -188,17 +188,26 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 				startIndex += 500;
 				console.log("startIndex : "+ startIndex);
 				console.log("entries length : "+ entries.length)
-				getPostArray(blogId, startIndex, totalItems, entries);
+				getPostArray(blogId, startIndex, totalItems, entries, isPostAll);
 			} else {
 				// this function is finished
 				console.log(entries.length);
 				console.log(entries[0]);
 				$scope.entries = utilServ.processBlogEntries(entries);
-				$scope.postAllToWordpress();
+				if(isPostAll == true){
+					$scope.postAllToWordpress();
+				}
+				
 			}
 		}).error(function(err){
 			console.log('err: '+ err)
 		})
+	}
+
+	$scope.getAllPosts = function(){
+		var entries = [];
+		var totalItems = $scope.totalItems;
+		getPostArray($scope.selSite, 1, totalItems, entries, false);
 	}
 
 	
