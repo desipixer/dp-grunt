@@ -28,6 +28,8 @@
    position : relative;
 }
 
+
+
 .imgCount {
       position: absolute; 
       width: 20px; 
@@ -50,4 +52,14 @@
       background: black; 
       color:white
 }
+
+.shareToGoogle {
+      position: absolute; 
+      width: 20px; 
+      height : 20px;
+      right: 35px; 
+      left:0;
+}
+
+
 

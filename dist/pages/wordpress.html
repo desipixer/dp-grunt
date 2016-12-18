@@ -1,7 +1,7 @@
-<div>
+<div ng-init="ran_col()">
 	<div></div>
 	<div>
-			<h2>{{title}}</h2>
+			<h2 id="page-title">{{title}}</h2>
 			<div class="row div-menu" style="padding-top:70px">
 				<div class="col-md-4">
 					<select ng-model="selSite" ng-options="site.blogId as site.blogURL for site in sites" ng-init="selSite = sites[0]" ng-change="selSiteChange()" class="form-control"></select>

@@ -45,7 +45,10 @@
 				<img ng-src="{{entry.thumb}}" alt="{{entry.title}}" title="{{entry.title}}" class="thumb-img" />
 			</a>
 			<span class='imgDownload'> {{entry.images.length }} </span>
+			<span class="shareToGoogle"><button ng-click="shareToGplus(entry)" class="btn btn-danger"><i class="fa fa-share-square-o" aria-hidden="true"></i>
+G </button></span>
 		</span>
 		</span>
 	</div>
+	<style ng-bind-html="dynamicresize"></style>
 </div>

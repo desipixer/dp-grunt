@@ -158,6 +158,14 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		
 	}
 
+	$scope.shareToGplus = function(postObj){
+		console.log(postObj);
+		var url = "https://plus.google.com/share?url=".concat(postObj.link);
+		var win = window.open(url, '_blank', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
+		win.focus();
+	}
+
+	//angular.element(document.getElementsByClassName('.thumb-img')).css('width', '100px');
 	
 	
 }]);

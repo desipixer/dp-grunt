@@ -448,6 +448,8 @@ app.directive('ngEnter', function () {
     };
 });
 
+
+
 app.controller('dpMainCtrl', ['$scope','service.sites','service.main', function($scope,siteServ, mainServ){
 	$scope.sites = siteServ.sites;
 	$scope.names = mainServ.names;
@@ -615,6 +617,14 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		
 	}
 
+	$scope.shareToGplus = function(postObj){
+		console.log(postObj);
+		var url = "https://plus.google.com/share?url=".concat(postObj.link);
+		var win = window.open(url, '_blank', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
+		win.focus();
+	}
+
+	//angular.element(document.getElementsByClassName('.thumb-img')).css('width', '100px');
 	
 	
 }]);
@@ -832,6 +842,12 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		getPostArray($scope.selSite, 1, totalItems, entries, false);
 	}
 
+	$scope.ran_col = function() { //function name
+                var color = '#'; // hexadecimal starting symbol
+                var letters = ['000000','FF0000','00FF00','0000FF','FFFF00','00FFFF','FF00FF','C0C0C0']; //Set your colors here
+                color += letters[Math.floor(Math.random() * letters.length)];
+                document.getElementById('page-title').style.background = color; // Setting the random color on your div element.
+            }
 	
 	
 }]);
