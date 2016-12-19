@@ -868,7 +868,8 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 
 	function postEntry(postObj, i){	
-		var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
+		//var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
+		var bearerToken = "mC!Ks7ezAcfX5)RCSOxDlelizd4upa7uEn!UXCIZ(DdCSLQjQRB#oQRau3iFT9MI";
 		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId+"/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
