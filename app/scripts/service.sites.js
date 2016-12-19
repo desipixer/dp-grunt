@@ -51,7 +51,8 @@ app.service('service.sites', function(){
 		{blogId: "5338625676592862668", blogURL: "http://cinytown.blogspot.com/", category: 1},
         {blogId: "3430584311590741572", blogURL: "http://tollywoodboost.blogspot.com/", category: 1},
         {blogId: "5186853171678363994", blogURL: "https://latestmovieimagess.blogspot.com", category: 1},
-        {blogId: "4758457913364204558", blogURL: "http://cinestargallery.blogspot.com/", category: 1}
+        {blogId: "4758457913364204558", blogURL: "http://cinestargallery.blogspot.com/", category: 1},
+        {blogId: "3512841850294928870", blogURL: "http://bollywoodtadkamasala.blogspot.com/", category: 2}
 	];
 
 	return {

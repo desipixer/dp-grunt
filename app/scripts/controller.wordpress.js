@@ -117,6 +117,14 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 
 	$scope.postAllToWordpress = function(){
+		console.log("postAllToWordpress called");
+		//check if limit posts is enabled or not
+		if($scope.isLimitedPosts){
+			var start = parseInt($scope.postStartIndex) || 0;
+			var end = parseInt($scope.postEndIndex) || $scope.entries.length;
+			$scope.entries = $scope.entries.slice(start, end + 1);
+		}
+
 		// get all images and post to wordpress
 		var i= $scope.entries.length - 1;	
 		var x = $scope.entries.length;

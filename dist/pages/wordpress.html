@@ -2,7 +2,7 @@
 	<div></div>
 	<div>
 			<h2 id="page-title">{{title}}</h2>
-			<div class="row div-menu" style="padding-top:70px">
+			<div class="row div-menu">
 				<div class="col-md-4">
 					<select ng-model="selSite" ng-options="site.blogId as site.blogURL for site in sites" ng-init="selSite = sites[0]" ng-change="selSiteChange()" class="form-control"></select>
 				</div>
@@ -31,14 +31,21 @@
 				<div class="col-md-3">
 					<input ng-model="filterEntry" placeholder="&#xf0b0; Filter" style="font-family:Arial, FontAwesome" class="form-control" />
 				</div>
-				<div class="col-md-2">
-					<button class="btn btn-info" ng-click="postAllToWordpress()"> POST Entries </button>
-				</div>
+				
 				<div class="col-md-1">
 					<button class="btn btn-info" ng-click="postAll()"> POST Blog </button>
 				</div>
 				
 				
+			</div>
+			<div class="row div-menu"> 	
+				<div class="checkbox" style="padding-left: 5px">
+				  <label><input type="checkbox" value="" ng-model="isLimitedPosts">Limit posts</label>
+				  <input type="text" style="width:50px" ng-model="postStartIndex" placeholder="Start" />
+				  <input type="text" style="width:50px" ng-model="postEndIndex" placeholder="End" />
+				
+					<button class="btn btn-info" ng-click="postAllToWordpress()"> POST Entries </button>
+				</div>
 			</div>
 	</div>
 	<div class="">
