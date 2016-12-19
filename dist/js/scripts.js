@@ -51,6 +51,7 @@ app.service('settings', function(){
 	}
 	return {
 		maxResults : 400,
+		maxApiFeedResults : 500,
 		startIndex : 1,
 		blogName : "http://www.dp.in",
 		blogId : "7833828309523986982",
@@ -172,9 +173,26 @@ app.service('service.url', ['$http', "service.auth","settings", function(http, a
 		return "https://www.googleapis.com/blogger/v3/blogs/".concat(blogId).concat("/posts");
 	}
 
+	var getApiFeedUrl = function(blogId, pageToken){
+		blogId = blogId || "7833828309523986982";
+		var baseUrl = "https://www.googleapis.com/blogger/v3/blogs/"+ blogId +"/posts";
+		if(pageToken){
+			var qs = {
+				fetchImages : true,
+				key : authService.getAuthKey(),
+				maxResults : settings.maxApiFeedResults,
+				pageToken : pageToken
+			}
+			return baseUrl.concat(objToString(qs));
+		} 
+		var apiFeedUrl = "https://www.googleapis.com/blogger/v3/blogs/"+ blogId +"/posts?fetchImages=true&key=AIzaSyBZvR46qyUilZ6Fl5vn9oPnLZtYHnqSknE&maxResults=500";
+		return apiFeedUrl;
+	}
+
 	return {
 		urlForBlogId : urlForBlogId,
 		urlForBlogFeed : urlForBlogFeed,
+		getApiFeedUrl : getApiFeedUrl,
 		urlForBlogDetails : urlForBlogDetails,
 		urlForSearchText : urlForSearchText,
 		objToString : objToString,
@@ -208,18 +226,80 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
         return imgArray;
 	}
 
-	var processBlogObj = function(obj){
+	
+
+	var processBlogObj = function(obj, category){
 		if(obj == undefined){
 			return;
 		}
-		if(obj.hasOwnProperty('feed')){
-			if(obj.feed.hasOwnProperty('entry')){
-				// print number of entries
-				console.log("Entries : "+ obj.feed.entry.length);
-				// start processing individual entries
-				var resultArr = [];
-				var entryArr = obj.feed.entry;
-				entryArr.forEach(function(value,index){
+		
+		category = category || 1;
+		if(category == 1){
+			if(obj.hasOwnProperty('feed')){
+				if(obj.feed.hasOwnProperty('entry')){
+					// print number of entries
+					console.log("Entries : "+ obj.feed.entry.length);
+					// start processing individual entries
+					var resultArr = [];
+					var entryArr = obj.feed.entry;
+					entryArr.forEach(function(value,index){
+						var obj = {};
+						obj.title = (value.title.$t !== undefined) ? value.title.$t : null;
+						obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+						obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]) : null;
+						obj.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+						obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+						obj.published = value.published.$t;
+						obj.updated = value.published.$t;
+
+						resultArr.push(obj);
+					});
+					this.sessionBlog = resultArr;
+					return resultArr;
+				}
+			}
+		} else if (category == 2){
+			//console.log(obj);
+			var resultArr = [];
+			// process feed api obj
+			var entryArr = obj.items;
+			console.log("Entries : "+ obj.items.length);
+			// from feed api
+			entryArr.forEach(function(value,index){
+				if(value != undefined){
+					//console.log(value);
+					var obj = {};
+					obj.title = value.title;
+					obj.images = filterImages(value.content);
+					obj.thumb = JSON.parse(JSON.stringify(obj.images).replace(/s1600/g,"s480"))[0]; //can be memory intensive
+					obj.id = value.id;
+					obj.published = (new Date(value.published)).getTime();
+					obj.updated = (new Date(value.updated)).getTime();
+					obj.link = value.url;
+					
+					resultArr.push(obj);
+				}
+			});
+			
+			this.sessionBlog = resultArr;
+			return resultArr;
+		}
+		
+		return [];
+	}
+
+	var processBlogEntries = function(entryArr, category){
+		var resultArr = [];
+		if(entryArr.length == 0){
+			return [];
+		}
+		if(entryArr == undefined){
+			return [];
+		}
+		category = category || 1;
+		if(category == 1){
+			entryArr.forEach(function(value,index){
+				if(value !== undefined){
 					var obj = {};
 					obj.title = (value.title.$t !== undefined) ? value.title.$t : null;
 					obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
@@ -230,37 +310,27 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 					obj.updated = value.published.$t;
 
 					resultArr.push(obj);
-				});
-				this.sessionBlog = resultArr;
-				return resultArr;
-			}
-		}
-		return [];
-	}
-
-	var processBlogEntries = function(entryArr){
-		var resultArr = [];
-		if(entryArr.length == 0){
-			return [];
-		}
-		if(entryArr == undefined){
-			return [];
-		}
-		entryArr.forEach(function(value,index){
-			if(value !== undefined){
+				}
+				
+			});
+		} else if(category == 2){
+			// from feed api
+			if(value != undefined){
 				var obj = {};
-				obj.title = (value.title.$t !== undefined) ? value.title.$t : null;
-				obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
-				obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]) : null;
-				obj.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
-				obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
-				obj.published = value.published.$t;
-				obj.updated = value.published.$t;
+				obj.title = value.title;
+				obj.images = filterImages(value.content);
+				obj.thumb = JSON.parse(JSON.stringify(obj.images).replace(/s1600/g,"s320")); //can be memory intensive
+				obj.id = value.id;
+				obj.published = (new Date(value.published)).getTime();
+				obj.updated = (new Date(value.updated)).getTime();
+				obj.link = value.url;
+				return obj;
 
 				resultArr.push(obj);
 			}
 			
-		});
+		}
+		
 		this.sessionBlog = resultArr;
 		return resultArr;
 	}
@@ -270,14 +340,21 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 	}
 
 	var searchText = function(blogId, keyword){
-		debugger;
+		//debugger;
 		var reqUrl = urlService.urlForSearchText(blogId, null, null, keyword);
 		return http.jsonp(reqUrl);
 	}
 
-	var getEntries = function(blogId, startIndex, maxResults){
-		var reqUrl = urlService.urlForBlogFeed(blogId, startIndex, maxResults);
-		return http.jsonp(reqUrl);
+	var getEntries = function(blogId, startIndex, maxResults, category){
+		category = category || 1;
+		if(category == 1){
+			var reqUrl = urlService.urlForBlogFeed(blogId, startIndex, maxResults);
+			return http.jsonp(reqUrl);
+		}
+		else if (category == 2){
+			var reqUrl = urlService.getApiFeedUrl(blogId, null);
+			return http.get(reqUrl);
+		}
 	}
 
 	return {
@@ -467,7 +544,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		$scope.entries = utilServ.sessionBlog;
 	} else {
 		utilServ.getEntries(null, settings.startIndex, settings.maxResults).success(function(obj){
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogObj(obj, 1);
 			$scope.entries = processedObj;
 		}).error(function(err){
 			console.log(err);
@@ -475,11 +552,22 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 	}
 
 	$scope.selSiteChange = function(){
-		utilServ.getEntries($scope.selSite, null, null).success(function(obj){
-			$scope.totalEntries = obj.feed.entry.length;
-			var processedObj = utilServ.processBlogObj(obj);
+		var category = _.filter(siteServ.sites, function(site){
+			
+			return site.blogId == $scope.selSite;
+		});
+		if(category){
+			category = category[0].category;
+		}
+		console.log("blog category "+ category);
+
+		utilServ.getEntries($scope.selSite, null, null, category).success(function(obj){
+			
+			
+			//$scope.totalEntries = obj.feed.entry !== undefined ? obj.feed.entry.length || 0;;
+			var processedObj = utilServ.processBlogObj(obj, category);
 			$scope.entries = processedObj;	
-			console.log($scope.entries);
+			//console.log($scope.entries);
 		}).error(function(err){
 			console.log(err);
 		});
@@ -637,6 +725,8 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	$scope.sites = siteServ.sites;
 	$scope.startIndex = settings.startIndex;
 	$scope.totalItems = 0;
+	//var wpBlodId = "109226478";
+	var wpBlogId = "121469346";
 
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
@@ -729,7 +819,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	$scope.getWPAuth = function(){
 		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io/dp-grunt/dist&response_type=token";
-		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+wpBlogId+"/posts/new";
 
 		$http({
 			method: 'POST',
@@ -779,7 +869,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	function postEntry(postObj, i){	
 		var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
-		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId+"/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
 		// Ignore any posts with less than 2 images. Most probably it will be bogus/ spam

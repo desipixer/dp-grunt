@@ -7,7 +7,7 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 		$scope.entries = utilServ.sessionBlog;
 	} else {
 		utilServ.getEntries(null, settings.startIndex, settings.maxResults).success(function(obj){
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogObj(obj, 1);
 			$scope.entries = processedObj;
 		}).error(function(err){
 			console.log(err);
@@ -15,11 +15,22 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 	}
 
 	$scope.selSiteChange = function(){
-		utilServ.getEntries($scope.selSite, null, null).success(function(obj){
-			$scope.totalEntries = obj.feed.entry.length;
-			var processedObj = utilServ.processBlogObj(obj);
+		var category = _.filter(siteServ.sites, function(site){
+			
+			return site.blogId == $scope.selSite;
+		});
+		if(category){
+			category = category[0].category;
+		}
+		console.log("blog category "+ category);
+
+		utilServ.getEntries($scope.selSite, null, null, category).success(function(obj){
+			
+			
+			//$scope.totalEntries = obj.feed.entry !== undefined ? obj.feed.entry.length || 0;;
+			var processedObj = utilServ.processBlogObj(obj, category);
 			$scope.entries = processedObj;	
-			console.log($scope.entries);
+			//console.log($scope.entries);
 		}).error(function(err){
 			console.log(err);
 		});

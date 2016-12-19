@@ -4,6 +4,8 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	$scope.sites = siteServ.sites;
 	$scope.startIndex = settings.startIndex;
 	$scope.totalItems = 0;
+	//var wpBlodId = "109226478";
+	var wpBlogId = "121469346";
 
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
@@ -96,7 +98,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	$scope.getWPAuth = function(){
 		var authUrl = "https://public-api.wordpress.com/oauth2/authorize?client_id=51005&redirect_uri=https://desipixer.github.io/dp-grunt/dist&response_type=token";
-		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+wpBlogId+"/posts/new";
 
 		$http({
 			method: 'POST',
@@ -146,7 +148,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	function postEntry(postObj, i){	
 		var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
-		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/109226478/posts/new";
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId+"/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
 		// Ignore any posts with less than 2 images. Most probably it will be bogus/ spam

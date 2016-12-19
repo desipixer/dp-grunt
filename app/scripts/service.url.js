@@ -60,9 +60,26 @@ app.service('service.url', ['$http', "service.auth","settings", function(http, a
 		return "https://www.googleapis.com/blogger/v3/blogs/".concat(blogId).concat("/posts");
 	}
 
+	var getApiFeedUrl = function(blogId, pageToken){
+		blogId = blogId || "7833828309523986982";
+		var baseUrl = "https://www.googleapis.com/blogger/v3/blogs/"+ blogId +"/posts";
+		if(pageToken){
+			var qs = {
+				fetchImages : true,
+				key : authService.getAuthKey(),
+				maxResults : settings.maxApiFeedResults,
+				pageToken : pageToken
+			}
+			return baseUrl.concat(objToString(qs));
+		} 
+		var apiFeedUrl = "https://www.googleapis.com/blogger/v3/blogs/"+ blogId +"/posts?fetchImages=true&key=AIzaSyBZvR46qyUilZ6Fl5vn9oPnLZtYHnqSknE&maxResults=500";
+		return apiFeedUrl;
+	}
+
 	return {
 		urlForBlogId : urlForBlogId,
 		urlForBlogFeed : urlForBlogFeed,
+		getApiFeedUrl : getApiFeedUrl,
 		urlForBlogDetails : urlForBlogDetails,
 		urlForSearchText : urlForSearchText,
 		objToString : objToString,

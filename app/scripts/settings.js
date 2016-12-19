@@ -11,6 +11,7 @@ app.service('settings', function(){
 	}
 	return {
 		maxResults : 400,
+		maxApiFeedResults : 500,
 		startIndex : 1,
 		blogName : "http://www.dp.in",
 		blogId : "7833828309523986982",
