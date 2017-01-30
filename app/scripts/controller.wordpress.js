@@ -5,8 +5,9 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	$scope.startIndex = settings.startIndex;
 	$scope.totalItems = 0;
 	//var wpBlodId = "109226478";
-	var wpBlogId = "121469346";
-
+	//var wpBlogId = "121469346";
+	//var wpBlogId = "123309558"; // desipixerz.wordpress.com --unused
+	var wpBlogId = "123360170"; //desipixercelebsnext.wordpress.com
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
 	} else {
