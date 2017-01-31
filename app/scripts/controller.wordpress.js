@@ -4,6 +4,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	$scope.sites = siteServ.sites;
 	$scope.startIndex = settings.startIndex;
 	$scope.totalItems = 0;
+	$scope.allEntries = [];
 	//var wpBlodId = "109226478";
 	//var wpBlogId = "121469346";
 	//var wpBlogId = "123309558"; // desipixerz.wordpress.com --unused
@@ -119,23 +120,23 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	}
 
 
-	$scope.postAllToWordpress = function(){
+	$scope.postAllToWordpress = function(allEntries){
 		console.log("postAllToWordpress called");
 		//check if limit posts is enabled or not
 		if($scope.isLimitedPosts){
 			var start = parseInt($scope.postStartIndex) || 0;
-			var end = parseInt($scope.postEndIndex) || $scope.entries.length;
-			$scope.entries = $scope.entries.slice(start, end + 1);
+			var end = parseInt($scope.postEndIndex) || allEntries.length;
+			$scope.allEntries = $scope.allEntries.slice(start, end + 1);
 		}
 
 		// get all images and post to wordpress
-		var i= $scope.entries.length - 1;	
-		var x = $scope.entries.length;
+		var i= $scope.allEntries.length - 1;	
+		var x = $scope.allEntries.length;
 
 		setInterval(function() {
 
 		    if (x > 0) {
-		        postEntry($scope.entries[i--], i);
+		        postEntry($scope.allEntries[i--], i);
 		    }
 
 		    else return;
@@ -149,7 +150,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	function postEntry(postObj, i){	
 		//var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
-		var bearerToken = "mC!Ks7ezAcfX5)RCSOxDlelizd4upa7uEn!UXCIZ(DdCSLQjQRB#oQRau3iFT9MI";
+		var bearerToken = "^pvzCZ%pm$QRIJ0BY2NnAJwCiWHPrCSPw*20DAhqV2zH&YWmx2txh*X!EecZ4Y%N";
 		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId+"/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
@@ -205,9 +206,12 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 				// this function is finished
 				console.log(entries.length);
 				console.log(entries[0]);
-				$scope.entries = utilServ.processBlogEntries(entries);
+				// minor changes to $scope.entries, since it hangs the page.
+
+				//$scope.entries = utilServ.processBlogEntries(entries);
+				var allEntriesArray = $scope.allEntries = utilServ.processBlogEntries(entries);
 				if(isPostAll == true){
-					$scope.postAllToWordpress();
+					$scope.postAllToWordpress(allEntriesArray);
 				}
 				
 			}
