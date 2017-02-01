@@ -729,7 +729,8 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	//var wpBlodId = "109226478";
 	//var wpBlogId = "121469346";
 	//var wpBlogId = "123309558"; // desipixerz.wordpress.com --unused
-	var wpBlogId = "123360170"; //desipixercelebsnext.wordpress.com
+	//var wpBlogId = "123360170"; //desipixercelebsnext.wordpress.com
+	var wpBlogId = "123467412"; //desipixersblog.wordpress.com
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
 	} else {
@@ -840,6 +841,11 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		//window.location = authUrl;
 	}
 
+	function randomIntFromInterval(min,max)
+	{
+	    return Math.floor(Math.random()*(max-min+1)+min);
+	}
+
 
 	$scope.postAllToWordpress = function(allEntries){
 		console.log("postAllToWordpress called");
@@ -863,7 +869,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		    else return;
 
 		    x--;
-		}, 200);
+		}, randomIntFromInterval(400,500));
 
 
 	}
@@ -871,33 +877,43 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	function postEntry(postObj, i){	
 		//var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
-		var bearerToken = "^pvzCZ%pm$QRIJ0BY2NnAJwCiWHPrCSPw*20DAhqV2zH&YWmx2txh*X!EecZ4Y%N";
+		//var bearerToken = "^pvzCZ%pm$QRIJ0BY2NnAJwCiWHPrCSPw*20DAhqV2zH&YWmx2txh*X!EecZ4Y%N";
+		var bearerToken = "4BVRUrXrinfdjPqaLPBRkpWhkSTXas)5^$Wl3b50%kHj4SD85VZh&TXyNGKWtjYJ";
 		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId+"/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
 		// Ignore any posts with less than 2 images. Most probably it will be bogus/ spam
+		//var randomNumber = randomIntFromInterval(800,1000);
+		var randomNumber = randomIntFromInterval(3000,6000);
 		if(postObj.images.length > 1){
-			$http({
-				method: 'POST',
-				url : postUrl, 
-				data : {
-					title : postTitle,
-					content : postContent
-				},
-				headers : {
-					"Authorization" : "Bearer "+ bearerToken
-				}
-			}).success(function(data){
-				//$('#wp-status').css('color','green').fadeOut(1000);
-				
-				console.log("Posted Item :"+ i);
-				console.log(data);
-			}).error(function(err){
-				console.log(err);
-			})
+			postWithRandomIntervals(randomNumber, postTitle, postContent, postUrl, bearerToken, i);
 		}
-		
 	}
+
+	function postWithRandomIntervals(seconds, title, content, postUrl, bearerToken, postCount){
+		setTimeout(function(){
+			console.log("Seconds "+ seconds);
+				$http({
+					method: 'POST',
+					url : postUrl, 
+					data : {
+						title : title,
+						content : content
+					},
+					headers : {
+						"Authorization" : "Bearer "+ bearerToken
+					}
+				}).success(function(data){
+					//$('#wp-status').css('color','green').fadeOut(1000);
+					
+					console.log("Posted Item :"+ postCount);
+					console.log(data);
+				}).error(function(err){
+					console.log(err);
+				})
+			}, seconds);
+		}
+
 
 	$scope.postAll = function(){
 		//get all posts from the blog and post to wordpress using bearer token of wordpress.
