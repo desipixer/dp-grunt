@@ -52,6 +52,11 @@ app.service('service.auth', ["$q", function($q){
 				"k" : "n75l%!FgW4QYGo(d)txM(vET*x)Vz&4#eOiA$&Bu2dESBF6SYJXA$a3LAmmD*6Fd",
 				"id" : "123529464",
 				"url" : "http://desipixer4all.wordpress.com"
+			},
+			{
+				"k" : "563pl9%SbhQxr!1cF*fBffoY(7uVLbnhqaD39EEd^qxLNBZ9@S$$2yH3(M4dHqH(",
+				"id" : "123532018",
+				"url" : "http://p4pixer.wordpress.com"
 			}
 		];
 		return keyArray;

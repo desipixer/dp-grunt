@@ -15,7 +15,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	//var wpBlogId = "123309558"; // desipixerz.wordpress.com --unused
 	//var wpBlogId = "123360170"; //desipixercelebsnext.wordpress.com
 	//var wpBlogId = "123467412"; //desipixersblog.wordpress.com
-	var targetBlog = wordpressKeys[0];
+	var targetBlog = wordpressKeys[1];
 	var wpBlogId = targetBlog.id;
 	var bearerToken	= targetBlog.k;
 
@@ -182,6 +182,14 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 			console.log("syncPostToWP() >> Entries are empty");
 			return;
 		}
+		/** If array is sorted, then sort the entire array based on title and return to user */
+		if($scope.isSorted){
+			console.log("syncPostToWP() >> sorting Entires array");
+			entries = _.sortBy(entries, function(obj){
+				return obj.title;
+			})
+		}
+
 		/** check if start and end index are greater than 0 */
 		if(startIndex !== undefined && endIndex !== undefined){
 			console.log("PROCESSING SYNCHRONOUS POSTING");
@@ -212,13 +220,13 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		}).success(function(obj){
 			console.log("postEntriesSync() >> POSTED : "+ i);
 			console.log(obj);
-			postEntriesSync(entries, --i, end);
+			postEntriesSync(entries, start, --end);
 		}).error(function(err){
 			++wpSettings.errCount;
 			console.log("postEntriesSync() >> ERROR :"+ err);
 			// Allow only max of 10 errors in code
 			if(wpSettings.errCount < 15 ){
-				postEntriesSync(entries, --i, end);
+				postEntriesSync(entries, start, --end);
 			}
 			
 		});
