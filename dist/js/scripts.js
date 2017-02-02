@@ -104,11 +104,23 @@ app.service('service.auth', ["$q", function($q){
 			}
 		},
 		accessToken : null
+	}
+
+	var wordpressKeys = function(){
+		var keyArray = [
+			{
+				"k" : "n75l%!FgW4QYGo(d)txM(vET*x)Vz&4#eOiA$&Bu2dESBF6SYJXA$a3LAmmD*6Fd",
+				"id" : "123529464",
+				"url" : "http://desipixer4all.wordpress.com"
+			}
+		];
+		return keyArray;
 	}	
 
 	return {
 		getAuthKey : getAuthKey,
-		blogger : blogger
+		blogger : blogger,
+		wpKeys : wordpressKeys
 	}
 }]);
 //service.util.js
@@ -719,18 +731,27 @@ app.controller('dpHomeCtrl', ['$scope','service.sites','service.util','settings'
 }]);
 
 	
-app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post','service.url',
- function($scope,siteServ, utilServ, settings, $http, $interval, postService, urlService){
+app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post','service.url', 'service.auth',
+ function($scope,siteServ, utilServ, settings, $http, $interval, postService, urlService, authService){
 	$scope.title = "Wordpress Page";
 	$scope.sites = siteServ.sites;
 	$scope.startIndex = settings.startIndex;
 	$scope.totalItems = 0;
 	$scope.allEntries = [];
+	var wpSettings = {
+		errCount : 10
+	}
+	var wordpressKeys = authService.wpKeys();
+	console.log(wordpressKeys);
 	//var wpBlodId = "109226478";
 	//var wpBlogId = "121469346";
 	//var wpBlogId = "123309558"; // desipixerz.wordpress.com --unused
 	//var wpBlogId = "123360170"; //desipixercelebsnext.wordpress.com
-	var wpBlogId = "123467412"; //desipixersblog.wordpress.com
+	//var wpBlogId = "123467412"; //desipixersblog.wordpress.com
+	var targetBlog = wordpressKeys[0];
+	var wpBlogId = targetBlog.id;
+	var bearerToken	= targetBlog.k;
+
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
 	} else {
@@ -857,10 +878,10 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		}
 
 		// get all images and post to wordpress
-		var i= $scope.allEntries.length - 1;	
-		var x = $scope.allEntries.length;
+		//var i= $scope.allEntries.length - 1;	
+		//var x = $scope.allEntries.length;
 
-		setInterval(function() {
+		/*setInterval(function() {
 
 		    if (x > 0) {
 		        postEntry($scope.allEntries[i--], i);
@@ -869,25 +890,72 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		    else return;
 
 		    x--;
-		}, randomIntFromInterval(400,500));
+		}, randomIntFromInterval(600,1000));*/
 
-
+		console.log("TOTAL ENTRIES TO POST : "+ allEntries.length);
+		/** Go with Synchronous posting, since they are blocking the site */
+		syncPostToWP(allEntries, 0, allEntries.length - 1);
 	}
 
 
 	function postEntry(postObj, i){	
-		//var bearerToken = "mja3FL5dcUVKeVF5!$u3IvE6SPZYuVfef)g9cr2Tm0is2F7FMvlCCs(PfWdI0&eP";
-		//var bearerToken = "^pvzCZ%pm$QRIJ0BY2NnAJwCiWHPrCSPw*20DAhqV2zH&YWmx2txh*X!EecZ4Y%N";
-		var bearerToken = "4BVRUrXrinfdjPqaLPBRkpWhkSTXas)5^$Wl3b50%kHj4SD85VZh&TXyNGKWtjYJ";
 		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId+"/posts/new";
 		var postTitle = postObj.title;
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
 		// Ignore any posts with less than 2 images. Most probably it will be bogus/ spam
-		//var randomNumber = randomIntFromInterval(800,1000);
-		var randomNumber = randomIntFromInterval(3000,6000);
+		var randomNumber = randomIntFromInterval(5000,7000);
 		if(postObj.images.length > 1){
 			postWithRandomIntervals(randomNumber, postTitle, postContent, postUrl, bearerToken, i);
 		}
+	}
+
+	/** Synchronously post to wordpress blog */
+	function syncPostToWP(entries,startIndex, endIndex){
+		if(entries.length < 0){
+			console.log("syncPostToWP() >> Entries are empty");
+			return;
+		}
+		/** check if start and end index are greater than 0 */
+		if(startIndex !== undefined && endIndex !== undefined){
+			console.log("PROCESSING SYNCHRONOUS POSTING");
+			postEntriesSync(entries, startIndex, endIndex);
+		}
+	}
+
+	/** actual http request will be made here */
+	function postEntriesSync(entries, start, end){
+		var i = start;
+		if(i > end){
+			return;
+		}
+		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId +"/posts/new";
+		var postTitle = entries[i].title;
+		var postContent = postService.generatePostHTML(entries[i].images, entries[i].title);
+		// make sync http requests 
+		$http({
+			method : 'POST',
+			url : postUrl,
+			data : {
+				title : postTitle,
+				content : postContent
+			},
+			headers : {
+				"Authorization" : "Bearer "+ bearerToken
+			}
+		}).success(function(obj){
+			console.log("postEntriesSync() >> POSTED : "+ i);
+			console.log(obj);
+			postEntriesSync(entries, i++, end);
+		}).error(function(err){
+			++wpSettings.errCount;
+			console.log("postEntriesSync() >> ERROR :"+ err);
+			// Allow only max of 10 errors in code
+			if(wpSettings.errCount < 10 ){
+				postEntriesSync(entries, i++, end);
+			}
+			
+		});
+
 	}
 
 	function postWithRandomIntervals(seconds, title, content, postUrl, bearerToken, postCount){

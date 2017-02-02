@@ -44,10 +44,22 @@ app.service('service.auth', ["$q", function($q){
 			}
 		},
 		accessToken : null
+	}
+
+	var wordpressKeys = function(){
+		var keyArray = [
+			{
+				"k" : "n75l%!FgW4QYGo(d)txM(vET*x)Vz&4#eOiA$&Bu2dESBF6SYJXA$a3LAmmD*6Fd",
+				"id" : "123529464",
+				"url" : "http://desipixer4all.wordpress.com"
+			}
+		];
+		return keyArray;
 	}	
 
 	return {
 		getAuthKey : getAuthKey,
-		blogger : blogger
+		blogger : blogger,
+		wpKeys : wordpressKeys
 	}
 }]);
