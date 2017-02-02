@@ -924,8 +924,8 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 
 	/** actual http request will be made here */
 	function postEntriesSync(entries, start, end){
-		var i = start;
-		if(i > end){
+		var i = end;
+		if(i < start){
 			return;
 		}
 		var postUrl = "https://public-api.wordpress.com/rest/v1/sites/"+ wpBlogId +"/posts/new";
@@ -945,13 +945,13 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		}).success(function(obj){
 			console.log("postEntriesSync() >> POSTED : "+ i);
 			console.log(obj);
-			postEntriesSync(entries, i++, end);
+			postEntriesSync(entries, --i, end);
 		}).error(function(err){
 			++wpSettings.errCount;
 			console.log("postEntriesSync() >> ERROR :"+ err);
 			// Allow only max of 10 errors in code
-			if(wpSettings.errCount < 10 ){
-				postEntriesSync(entries, i++, end);
+			if(wpSettings.errCount < 15 ){
+				postEntriesSync(entries, --i, end);
 			}
 			
 		});
