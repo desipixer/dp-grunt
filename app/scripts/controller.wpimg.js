@@ -1,4 +1,4 @@
-app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post','service.url', 'service.auth',
+app.controller('dpWpImgCtrl', ['$scope','service.sites','service.util','settings','$http', '$interval', 'service.post','service.url', 'service.auth',
  function($scope,siteServ, utilServ, settings, $http, $interval, postService, urlService, authService){
 	$scope.title = "Wordpress Page";
 	$scope.sites = siteServ.sites;
@@ -11,14 +11,15 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	var wordpressKeys = authService.wpKeys();
 	console.log(wordpressKeys);
 	var targetBlog = wordpressKeys[1];
-	var wpBlogId = targetBlog.id;
+	var wpBlogId = targetBlog.id;		
 	var bearerToken	= targetBlog.k;
 
 	if(utilServ.sessionBlog.length > 0){
 		$scope.entries = utilServ.sessionBlog;
 	} else {
 		utilServ.getEntries(null, settings.startIndex, settings.maxResults).success(function(obj){
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogImagesObj(obj);
+			//console.log(processedObj);
 			$scope.entries = processedObj;
 		}).error(function(err){
 			console.log(err);
@@ -28,7 +29,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	$scope.selSiteChange = function(){
 		utilServ.getEntries($scope.selSite, null, null).success(function(obj){
 			$scope.totalEntries = obj.feed.entry.length;
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogImagesObj(obj);
 			$scope.entries = processedObj;	
 			//console.log($scope.entries);
 		}).error(function(err){
@@ -58,7 +59,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 	$scope.searchKeyWords = function(){
 		var blogId = $scope.selSite.blogId !== undefined ? $scope.selSite.blogId : $scope.selSite ;
 		utilServ.searchText(blogId, $scope.txtSearch).success(function(obj){
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogImagesObj(obj);
 			$scope.entries = processedObj;
 		});
 	}
@@ -70,7 +71,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		$scope.startIndex= settings.startIndex -= settings.maxResults;
 		var blogId = $scope.selSite.blogId !== undefined ? $scope.selSite.blogId : $scope.selSite ;
 		utilServ.getEntries(blogId, settings.startIndex, settings.maxResults).success(function(obj){
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogImagesObj(obj);
 			$scope.entries = processedObj;
 		}).error(function(err){
 			console.log(err);
@@ -81,7 +82,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		$scope.startIndex = settings.startIndex += settings.maxResults;
 		var blogId = $scope.selSite.blogId !== undefined ? $scope.selSite.blogId : $scope.selSite ;
 		utilServ.getEntries(blogId, settings.startIndex, settings.maxResults).success(function(obj){
-			var processedObj = utilServ.processBlogObj(obj);
+			var processedObj = utilServ.processBlogImagesObj(obj);
 			$scope.entries = processedObj;
 		}).error(function(err){
 			console.log(err);
@@ -138,7 +139,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		//check if limit posts is enabled or not
 		if($scope.isLimitedPosts){
 			console.log("START INDEX : "+ $scope.postStartIndex +" | END INDEX : "+ $scope.postEndIndex);
-
+			console.log("Entries Length : "+ allEntries.length)
 			var start = parseInt($scope.postStartIndex) || 0;	
 			var end = parseInt($scope.postEndIndex) || allEntries.length;
 			$scope.allEntries = $scope.allEntries.slice(start, end + 1);
@@ -172,7 +173,7 @@ app.controller('dpWordPressCtrl', ['$scope','service.sites','service.util','sett
 		var postContent = postService.generatePostHTML(postObj.images, postObj.title);
 		// Ignore any posts with less than 2 images. Most probably it will be bogus/ spam
 		var randomNumber = randomIntFromInterval(5000,7000);
-		if(postObj.images.length > 1){
+		if(postObj.images.length >= 1){
 			postWithRandomIntervals(randomNumber, postTitle, postContent, postUrl, bearerToken, i);
 		}
 	}

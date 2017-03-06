@@ -26,6 +26,7 @@ module.exports = function(grunt) {
 				'app/scripts/controller.main.js',
 				'app/scripts/controller.home.js',
 				'app/scripts/controller.wordpress.js',
+				'app/scripts/controller.wpimg.js',
 				'app/scripts/controller.images.js'
 				],
 				dest : 'dist/js/scripts.js'		

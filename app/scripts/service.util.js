@@ -87,6 +87,75 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 		return [];
 	}
 
+
+	var processBlogImagesObj = function(obj, category){
+		if(obj == undefined){
+			return;
+		}
+		
+		category = category || 1;
+		if(category == 1){
+			if(obj.hasOwnProperty('feed')){
+				if(obj.feed.hasOwnProperty('entry')){
+					// print number of entries
+					console.log("Entries : "+ obj.feed.entry.length);
+					// start processing individual entries
+					var resultArr = [];
+					var entryArr = obj.feed.entry;
+					entryArr.forEach(function(value,index){
+						var ent = {};
+						ent.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+						if(ent.images != undefined && ent.images.length > 0){
+							ent.images.forEach(function(v, i){
+								var obj = {};
+								obj.title = (value.title.$t !== undefined) ? value.title.$t + " : "+ i.toString() : null;
+								obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+								obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]).concat("-").concat(i) : null;
+								//obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+								obj.published = value.published.$t;
+								obj.updated = value.published.$t;
+								obj.images = [v];
+								resultArr.push(obj);
+							})
+							
+						}
+
+						
+					});
+					this.sessionBlog = resultArr;
+					return resultArr;
+				}
+			}
+		} else if (category == 2){
+			//console.log(obj);
+			var resultArr = [];
+			// process feed api obj
+			var entryArr = obj.items;
+			console.log("Entries : "+ obj.items.length);
+			// from feed api
+			entryArr.forEach(function(value,index){
+				if(value != undefined){
+					//console.log(value);
+					var obj = {};
+					obj.title = value.title;
+					obj.images = filterImages(value.content);
+					obj.thumb = JSON.parse(JSON.stringify(obj.images).replace(/s1600/g,"s480"))[0]; //can be memory intensive
+					obj.id = value.id;
+					obj.published = (new Date(value.published)).getTime();
+					obj.updated = (new Date(value.updated)).getTime();
+					obj.link = value.url;
+					
+					resultArr.push(obj);
+				}
+			});
+			
+			this.sessionBlog = resultArr;
+			return resultArr;
+		}
+		
+		return [];
+	}
+
 	var processBlogEntries = function(entryArr, category){
 		var resultArr = [];
 		if(entryArr.length == 0){
@@ -112,6 +181,61 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 				}
 				
 			});
+		} else if(category == 2){
+			// from feed api
+			if(value != undefined){
+				var obj = {};
+				obj.title = value.title;
+				obj.images = filterImages(value.content);
+				obj.thumb = JSON.parse(JSON.stringify(obj.images).replace(/s1600/g,"s320")); //can be memory intensive
+				obj.id = value.id;
+				obj.published = (new Date(value.published)).getTime();
+				obj.updated = (new Date(value.updated)).getTime();
+				obj.link = value.url;
+				return obj;
+
+				resultArr.push(obj);
+			}
+			
+		}
+		
+		this.sessionBlog = resultArr;
+		return resultArr;
+	}
+
+	var processBlogImgEntries = function(entryArr, category){
+		var resultArr = [];
+		if(entryArr.length == 0){
+			return [];
+		}
+		if(entryArr == undefined){
+			return [];
+		}
+		category = category || 1;
+		console.log("CATEGORY :"+ category);
+		if(category == 1){
+			entryArr.forEach(function(value,index){
+						var ent = {};
+						console.log("value : ", value);
+						ent.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+						if(ent.images != undefined && ent.images.length > 0){
+							ent.images.forEach(function(v, i){
+								var obj = {};
+								obj.title = (value.title.$t !== undefined) ? value.title.$t + " : "+ i.toString() : null;
+								obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+								obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]).concat("-").concat(i) : null;
+								//obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+								obj.published = value.published.$t;
+								obj.updated = value.published.$t;
+								obj.images = [v];
+								obj.content = value.content.$t;
+								resultArr.push(obj);
+							})
+							
+						}
+
+						
+					});
 		} else if(category == 2){
 			// from feed api
 			if(value != undefined){
@@ -162,6 +286,8 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 		searchSite : searchSite,
 		searchText : searchText,
 		sessionBlog : this.sessionBlog,
-		processBlogEntries : processBlogEntries
+		processBlogEntries : processBlogEntries,
+		processBlogImgEntries : processBlogImgEntries,
+		processBlogImagesObj : processBlogImagesObj
 	}
 }]);
