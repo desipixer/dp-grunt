@@ -291,7 +291,8 @@ app.controller('dpWpImgCtrl', ['$scope','service.sites','service.util','settings
 				// minor changes to $scope.entries, since it hangs the page.
 
 				//$scope.entries = utilServ.processBlogEntries(entries);
-				var allEntriesArray = $scope.allEntries = utilServ.processBlogEntries(entries);
+				var allEntriesArray = utilServ.processBlogImgEntries(entries);
+				$scope.allEntries = allEntriesArray;
 				if(isPostAll == true){
 					$scope.postAllToWordpress(allEntriesArray);
 				}

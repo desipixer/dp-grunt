@@ -121,6 +121,10 @@ app.service('service.auth', ["$q", function($q){
 				"k" : "An%QTst2!ZXhN5WmKSQpzlxtMY9Uz1QEA3l97DcBfvj9fOFkr@mUBXl)$eq!3l9P",
 				"id" : "125169089",
 				"url" : "http://p10pixer.wordpress.com"
+			},{
+				"k" : "AsaG&73bWRNm5%s2QT3PLEwRA34c#JRXVxImzZKOOWZ^*Q4WJAMXb3QpVS1%WoJn",
+				"id" : "125295464",
+				"url" : "http://p11pixer.wordpress.com"
 			}
 		];
 		return keyArray;
@@ -493,24 +497,23 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 			entryArr.forEach(function(value,index){
 						var ent = {};
 						console.log("value : ", value);
-						ent.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
-						if(ent.images != undefined && ent.images.length > 0){
-							ent.images.forEach(function(v, i){
-								var obj = {};
-								obj.title = (value.title.$t !== undefined) ? value.title.$t + " : "+ i.toString() : null;
-								obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
-								obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]).concat("-").concat(i) : null;
-								//obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
-								obj.published = value.published.$t;
-								obj.updated = value.published.$t;
-								obj.images = [v];
-								obj.content = value.content.$t;
-								resultArr.push(obj);
-							})
-							
+						if(value != undefined){
+							ent.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+							if(ent.images != undefined && ent.images.length > 0){
+								ent.images.forEach(function(v, i){
+									var obj = {};
+									obj.title = (value.title.$t !== undefined) ? value.title.$t + " : "+ i.toString() : null;
+									obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+									obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]).concat("-").concat(i) : null;
+									//obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+									obj.published = value.published.$t;
+									obj.updated = value.published.$t;
+									obj.images = [v];
+									obj.content = value.content.$t;
+									resultArr.push(obj);
+								})
+							}	
 						}
-
-						
 					});
 		} else if(category == 2){
 			// from feed api
@@ -1533,7 +1536,8 @@ app.controller('dpWpImgCtrl', ['$scope','service.sites','service.util','settings
 				// minor changes to $scope.entries, since it hangs the page.
 
 				//$scope.entries = utilServ.processBlogEntries(entries);
-				var allEntriesArray = $scope.allEntries = utilServ.processBlogEntries(entries);
+				var allEntriesArray = utilServ.processBlogImgEntries(entries);
+				$scope.allEntries = allEntriesArray;
 				if(isPostAll == true){
 					$scope.postAllToWordpress(allEntriesArray);
 				}

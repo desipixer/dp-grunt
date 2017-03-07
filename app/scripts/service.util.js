@@ -217,24 +217,23 @@ app.service('service.util', ['$http','settings','service.url', function(http, se
 			entryArr.forEach(function(value,index){
 						var ent = {};
 						console.log("value : ", value);
-						ent.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
-						if(ent.images != undefined && ent.images.length > 0){
-							ent.images.forEach(function(v, i){
-								var obj = {};
-								obj.title = (value.title.$t !== undefined) ? value.title.$t + " : "+ i.toString() : null;
-								obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
-								obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]).concat("-").concat(i) : null;
-								//obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
-								obj.published = value.published.$t;
-								obj.updated = value.published.$t;
-								obj.images = [v];
-								obj.content = value.content.$t;
-								resultArr.push(obj);
-							})
-							
+						if(value != undefined){
+							ent.images = (value.content.$t !== undefined) ? filterImages(value.content.$t) : [];
+							if(ent.images != undefined && ent.images.length > 0){
+								ent.images.forEach(function(v, i){
+									var obj = {};
+									obj.title = (value.title.$t !== undefined) ? value.title.$t + " : "+ i.toString() : null;
+									obj.link = (value.link !== undefined) ? value.link[value.link.length - 1].href : null;
+									obj.id = (value.id.$t !== undefined) ? value.id.$t.match(/\d+/g)[1].concat("-").concat(value.id.$t.match(/\d+/g)[2]).concat("-").concat(i) : null;
+									//obj.thumb = (obj.images.length !== 0) ? obj.images[0].replace('s1600','s480') : [];
+									obj.published = value.published.$t;
+									obj.updated = value.published.$t;
+									obj.images = [v];
+									obj.content = value.content.$t;
+									resultArr.push(obj);
+								})
+							}	
 						}
-
-						
 					});
 		} else if(category == 2){
 			// from feed api
