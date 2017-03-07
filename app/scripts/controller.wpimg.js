@@ -10,7 +10,7 @@ app.controller('dpWpImgCtrl', ['$scope','service.sites','service.util','settings
 	}
 	var wordpressKeys = authService.wpKeys();
 	console.log(wordpressKeys);
-	var targetBlog = wordpressKeys[1];
+	var targetBlog = wordpressKeys[2];
 	var wpBlogId = targetBlog.id;		
 	var bearerToken	= targetBlog.k;
 
