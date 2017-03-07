@@ -56,6 +56,10 @@ app.service('service.auth', ["$q", function($q){
 				"k" : "An%QTst2!ZXhN5WmKSQpzlxtMY9Uz1QEA3l97DcBfvj9fOFkr@mUBXl)$eq!3l9P",
 				"id" : "125169089",
 				"url" : "http://p10pixer.wordpress.com"
+			},{
+				"k" : "AsaG&73bWRNm5%s2QT3PLEwRA34c#JRXVxImzZKOOWZ^*Q4WJAMXb3QpVS1%WoJn",
+				"id" : "125295464",
+				"url" : "http://p11pixer.wordpress.com"
 			}
 		];
 		return keyArray;
