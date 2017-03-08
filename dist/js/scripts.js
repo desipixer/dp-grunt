@@ -36,6 +36,11 @@ app.config(['$stateProvider','$urlRouterProvider', function(stateProvider, urlPr
 			templateUrl : 'pages/wpimg.html',
 			controller : 'dpWpImgCtrl'
 		})
+		.state('wpPublish', {
+			url : '/publish',
+			templateUrl : 'pages/publish.html',
+			controller : 'dpWpPublishCtrl'
+		})
 }])
 app.service('service.main', function(){
 	var names = ["Senthil", "Kumar"];
@@ -716,6 +721,50 @@ document.onkeydown = function(event){
 	}	
 
 }
+/**
+ * @desc contains all logic related publishing to wordpress site.
+ */
+
+app.service('service.publish', ['settings', '$http', function(settings,$http) {
+    
+
+    var yqlParser = function(xmlSource){
+        return yqlURL = [
+            "http://query.yahooapis.com/v1/public/yql",
+            "?q=" + encodeURIComponent("select * from xml where url='" + xmlSource + "'"),
+            "&format=xml&callback=?"
+         ].join("");
+    }
+
+    var x2js = new X2JS();
+
+    //function to get XML feeds from wordpress site 
+    var getXMLFeedsFromWordPress = function(url){
+        url = url || 'https://p0pixer.wordpress.com/feed/atom/?paged=1';
+        // try to get the feed using jquery api
+        $.ajax({
+            url : yqlParser(url),
+            type : 'GET',
+            dataType : 'json',
+            success : function(obj){
+                console.log(obj);
+                var xmlText = obj.results[0];
+                var resultJSON = x2js.xml_str2json(xmlText);
+                console.log(resultJSON);
+            },
+            error : function(err){
+                console.log(err);
+            }
+        })
+    }
+
+
+
+
+    return {
+        getUrl : getXMLFeedsFromWordPress
+    }
+}]);
 app.directive('ngEnter', function () {
     return function (scope, element, attrs) {
         element.bind("keydown keypress", function (event) {
@@ -1565,6 +1614,18 @@ app.controller('dpWpImgCtrl', ['$scope','service.sites','service.util','settings
 }]);
 
 	
+app.controller('dpWpPublishCtrl', ['$scope','service.publish', function($scope, publishService){
+
+    $scope.getWordpressFeed = function(){
+        var url = $scope.wordpressUrl;
+        if(url){
+            publishService.getUrl(url);
+        } else {
+            console.log("Invalid Url, getting default Url");
+            publishService.getUrl();
+        }
+    }
+}])
 app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.post","$http", function($scope,$stateParams, utilService, postService, $http){
 
 	var id = $stateParams.id !== undefined ? $stateParams.id : 'default';

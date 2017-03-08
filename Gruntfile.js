@@ -22,11 +22,13 @@ module.exports = function(grunt) {
 				'app/scripts/service.sites.js',
 				'app/scripts/service.post.js',
 				'app/scripts/service.copy.js',
+				'app/scripts/service.publish.js',
 				'app/scripts/directive.enter.js',
 				'app/scripts/controller.main.js',
 				'app/scripts/controller.home.js',
 				'app/scripts/controller.wordpress.js',
 				'app/scripts/controller.wpimg.js',
+				'app/scripts/controller.publish.js',
 				'app/scripts/controller.images.js'
 				],
 				dest : 'dist/js/scripts.js'		
@@ -37,7 +39,8 @@ module.exports = function(grunt) {
 				'app/lib/js/angular-ui-router.min.js',
 				'app/lib/js/underscore-min.js',
 				'app/lib/js/clipboard.min.js',
-				'app/lib/js/jquery-3.1.1.min.js'
+				'app/lib/js/jquery-3.1.1.min.js',
+				'app/lib/js/xml2json.js'
 				],
 				dest : 'dist/scripts/vendor.js'
 			}

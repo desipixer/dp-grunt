@@ -36,4 +36,9 @@ app.config(['$stateProvider','$urlRouterProvider', function(stateProvider, urlPr
 			templateUrl : 'pages/wpimg.html',
 			controller : 'dpWpImgCtrl'
 		})
+		.state('wpPublish', {
+			url : '/publish',
+			templateUrl : 'pages/publish.html',
+			controller : 'dpWpPublishCtrl'
+		})
 }])
