@@ -50,16 +50,7 @@ module.exports = function(grunt) {
 				files : ['app/**/*.js', 'app/**/*'],
 				tasks : ['concat','uglify', 'copy']	
 		},
-		uglify : {
-			options : {
-				mangle : true
-			},
-			target : {
-				files : {
-					'dist/scripts/scripts.min.js' : ['dist/js/scripts.js']
-				}
-			}
-		},
+		
 		copy : {
 			main : {
 				files : [
@@ -86,11 +77,11 @@ module.exports = function(grunt) {
 	})
 
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+	//grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('default', ['concat','copy','uglify']);
+	grunt.registerTask('default', ['concat','copy']);
 
 };	

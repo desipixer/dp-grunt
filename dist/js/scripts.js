@@ -652,6 +652,16 @@ app.service('service.post', ["service.auth", "service.util", "service.url", "$ht
 		return htmlStr;
 	}
 
+	var generateForumContent = function(imgArray, title){
+		var str = "";
+		if(imgArray.length > 0){
+			imgArray.forEach((v,i) => {
+				str += `[IMG]${v}[/IMG]`;
+			});
+		}
+		return str;
+	}
+
 	var login = function(){
 		console.log('called login service');
 		return auth.blogger.getToken();
@@ -705,7 +715,8 @@ app.service('service.post', ["service.auth", "service.util", "service.url", "$ht
 		loggedIn : loggedIn,
 		login : login,
 		publishPost : publishPost,
-		generatePostHTML : generatePostHTML
+		generatePostHTML : generatePostHTML,
+		generateForumContent : generateForumContent
 	}
 
 }])
@@ -1638,6 +1649,7 @@ app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.
 	$scope.postObj = postObj.length > 0 ? postObj[0] : [];
 
 	$scope.postContent = postService.generatePostHTML($scope.postObj.images, $scope.postObj.title);
+	$scope.forumContent = postService.generateForumContent($scope.postObj.images, $scope.postObj.title);
 
 	$scope.publishPost = function(){
 		// check for login information and post it to blogger site

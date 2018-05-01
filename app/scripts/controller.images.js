@@ -10,6 +10,7 @@ app.controller('dpImageCtrl', ["$scope","$stateParams", "service.util","service.
 	$scope.postObj = postObj.length > 0 ? postObj[0] : [];
 
 	$scope.postContent = postService.generatePostHTML($scope.postObj.images, $scope.postObj.title);
+	$scope.forumContent = postService.generateForumContent($scope.postObj.images, $scope.postObj.title);
 
 	$scope.publishPost = function(){
 		// check for login information and post it to blogger site
